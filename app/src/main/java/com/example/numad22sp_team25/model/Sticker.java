@@ -1,4 +1,4 @@
-package com.example.numad22sp_team25.realtimedatabase.model;
+package com.example.numad22sp_team25.model;
 
 public class Sticker {
     public String from;

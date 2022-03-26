@@ -16,8 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.numad22sp_team25.realtimedatabase.model.Sticker;
-import com.example.numad22sp_team25.realtimedatabase.model.User;
+import com.example.numad22sp_team25.model.Sticker;
+import com.example.numad22sp_team25.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
@@ -35,7 +35,7 @@ public class HomePageActivity extends AppCompatActivity {
     // components
     private RecyclerView.LayoutManager rLayoutManager;
     private RecyclerView recyclerView;
-    private StickerRecordsAdapter rviewAdapter;
+    private StickerRecordsAdapter rViewAdapter;
     private Button send;
     private Button userInfo;
 
@@ -90,15 +90,15 @@ public class HomePageActivity extends AppCompatActivity {
         allUsersListener();
         stickerSendListener();
 
-        // create notification
-        createNotificationChannel();
+//        // create notification
+//        createNotificationChannel();
 
-        // current user subscribe to their own topic to get notifications
-        subscribe();
+//        // current user subscribe to their own topic to get notifications
+//        subscribe();
 
         setContentView(R.layout.activity_homepage);
 
-        // initialize recycleview
+        // initialize recyclerView
         initializeRecyclerview(savedInstanceState);
     }
 
@@ -115,6 +115,14 @@ public class HomePageActivity extends AppCompatActivity {
         }
 
         super.onSaveInstanceState(outState);
+    }
+
+    public void sendSticker(View view) {
+        Toast.makeText(HomePageActivity.this ,currentUsername + " send sticker", Toast.LENGTH_SHORT).show();
+    }
+
+    public void showUserInfo(View view) {
+        Toast.makeText(HomePageActivity.this ,currentUsername + " show account", Toast.LENGTH_SHORT).show();
     }
 
     private void restartLoginActivity() {
@@ -221,6 +229,7 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     private void initializeRecyclerview(Bundle savedInstanceState) {
+        // Restore recyclerView on orientation change
         if (savedInstanceState != null && savedInstanceState.containsKey("StickerSize")) {
             int size = savedInstanceState.getInt("StickerSize");
 
@@ -242,16 +251,8 @@ public class HomePageActivity extends AppCompatActivity {
         rLayoutManager = new LinearLayoutManager(this);
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        rviewAdapter = new StickerRecordsAdapter(stickerRecords);
-        recyclerView.setAdapter(rviewAdapter);
+        rViewAdapter = new StickerRecordsAdapter(stickerRecords);
+        recyclerView.setAdapter(rViewAdapter);
         recyclerView.setLayoutManager(rLayoutManager);
-    }
-
-    public void sendSticker(View view) {
-
-    }
-
-    public void showUserInfo(View view) {
-
     }
 }

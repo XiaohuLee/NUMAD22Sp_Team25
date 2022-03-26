@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.numad22sp_team25.realtimedatabase.model.Sticker;
+import com.example.numad22sp_team25.model.Sticker;
 
 import java.util.ArrayList;
 

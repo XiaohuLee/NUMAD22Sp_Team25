@@ -10,7 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.numad22sp_team25.realtimedatabase.model.User;
+import com.example.numad22sp_team25.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -32,11 +32,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acvitity_login);
 
-        // If the user is returning
-        if (savedInstanceState != null && savedInstanceState.containsKey("USERNAME")) {
-            gotoHomePage();
-        }
-
         username = findViewById(R.id.username);
         db = FirebaseDatabase.getInstance();
         fcm = FirebaseMessaging.getInstance();
@@ -46,21 +41,16 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<String> task) {
                 if (!task.isSuccessful()) {
+                    Toast.makeText(LoginActivity.this, "Failed to generate token!", Toast.LENGTH_SHORT).show();
                     task.getException().printStackTrace();
                 } else {
                     if (CLIENT_REGISTRATION_TOKEN == null) {
                         CLIENT_REGISTRATION_TOKEN = task.getResult();
                     }
+                    Toast.makeText(LoginActivity.this, CLIENT_REGISTRATION_TOKEN, Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-        // store preference
-        currentUsername = getSharedPreferences("sharedPreference", MODE_PRIVATE).getString("username", null);
-
-        if (currentUsername != null) {
-            gotoHomePage();
-        }
     }
 
     public void loginUser(View view) {
@@ -104,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void gotoHomePage() {
-        startActivity(new Intent(LoginActivity.this, HomePageActivity.class));
+        Intent intent = new Intent(LoginActivity.this, HomePageActivity.class);
+        startActivity(intent);
     }
 }
