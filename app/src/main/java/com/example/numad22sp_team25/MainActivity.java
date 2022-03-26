@@ -17,8 +17,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void button_test_db_method(View view) {
-        Intent intent = new Intent(MainActivity.this, testDB.class);
+    public void button_a7(View view) {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         MainActivity.this.startActivity(intent);
     }
+
+//    public void button_test_db_method(View view) {
+//        Intent intent = new Intent(MainActivity.this, testDB.class);
+//        MainActivity.this.startActivity(intent);
+//    }
 }

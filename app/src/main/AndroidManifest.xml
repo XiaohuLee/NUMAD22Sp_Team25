@@ -19,7 +19,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".testDB" />
+            android:name=".LoginActivity" />
+        <activity
+            android:name=".HomePageActivity" />
     </application>
 
 </manifest>
