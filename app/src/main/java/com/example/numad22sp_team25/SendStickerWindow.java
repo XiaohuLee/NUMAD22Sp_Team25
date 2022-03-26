@@ -61,7 +61,7 @@ public class SendStickerWindow extends DialogFragment {
         View view = requireActivity().getLayoutInflater().inflate(R.layout.sticker_window, null);
         spinner = view.findViewById(R.id.stickerSpinner);
         spinner.setAdapter(new customizedSpinnerAdapter(getContext(), emojiName, emojiIcon));
-        builder.setView(view).setPositiveButton("Send Sticker", ((dialogInterface, i) -> stickerListener.windowClick(SendStickerWindow.this)));
+        builder.setView(view).setPositiveButton("Send Sticker", ((d, i) -> stickerListener.windowClick(SendStickerWindow.this)));
         return builder.create();
     }
 

@@ -1,13 +1,19 @@
 package com.example.numad22sp_team25;
 
+import static com.example.numad22sp_team25.Resource.SERVER_KEY;
+import static com.example.numad22sp_team25.Resource.emojiIcon;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,9 +23,11 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.numad22sp_team25.fcm.Utils;
 import com.example.numad22sp_team25.model.Sticker;
 import com.example.numad22sp_team25.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -29,10 +37,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class HomePageActivity extends AppCompatActivity {
+public class HomePageActivity extends AppCompatActivity implements SendStickerWindowListener {
     // components
     private RecyclerView.LayoutManager rLayoutManager;
     private RecyclerView recyclerView;
@@ -49,6 +60,9 @@ public class HomePageActivity extends AppCompatActivity {
 
     // all users
     private HashMap<String, Boolean> allUsersHashmap;
+
+    // send metadata
+    private Integer newSticker;
 
     // infrastructure resources
     private FirebaseDatabase db;
@@ -78,7 +92,7 @@ public class HomePageActivity extends AppCompatActivity {
         allUsersHashmap = new HashMap<>();
 
         // in case user or token missing, restart LoginActivity
-        restartLoginActivity();
+//        restartLoginActivity();
 
         // bind resources
         db = FirebaseDatabase.getInstance();
@@ -125,7 +139,7 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     public void showUserInfo(View view) {
-        Toast.makeText(HomePageActivity.this ,currentUsername + " show account", Toast.LENGTH_SHORT).show();
+        Toast.makeText(HomePageActivity.this ,currentUsername + " has sent " + stickerSend + " stickers.", Toast.LENGTH_SHORT).show();
     }
 
     private void restartLoginActivity() {
@@ -257,5 +271,86 @@ public class HomePageActivity extends AppCompatActivity {
         rViewAdapter = new StickerRecordsAdapter(stickerRecords);
         recyclerView.setAdapter(rViewAdapter);
         recyclerView.setLayoutManager(rLayoutManager);
+    }
+
+    @Override
+    public void windowClick(DialogFragment send) {
+        String recipient = ((EditText) send.getDialog().findViewById(R.id.spinnerUsername)).getText().toString();
+        newSticker = emojiIcon[((Spinner) send.getDialog().findViewById(R.id.stickerSpinner)).getSelectedItemPosition()];
+
+        if (validRecipient(recipient)) {
+            send.dismiss();
+            sendStickerToUser(recipient, newSticker);
+            Toast.makeText(HomePageActivity.this ,"Successfully send sticker to " + recipient, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(HomePageActivity.this , "Username:" + recipient + " not present, please choose another user", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean validRecipient(String recipient) {
+        return false;
+    }
+
+    private void sendStickerToUser(String recipient, Integer newSticker) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jPayload = new JSONObject();
+                JSONObject jNotification = new JSONObject();
+
+                try {
+                    // update notification
+                    jNotification.put("title", "Sticker from " + currentUsername + " to " + recipient);
+                    jNotification.put("body", newSticker);
+                    jNotification.put("sound", "default");
+                    jNotification.put("badge", "1");
+
+                    // construct payload
+                    jPayload.put("to", "/topics/" + recipient);
+                    jPayload.put("priority", "high");
+                    jPayload.put("notification", jNotification);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                // send payload
+                String response = Utils.fcmHttpConnection(SERVER_KEY, jPayload);
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DatabaseReference recipientRef = db.getReference("Users/" + recipient);
+
+                // update recipients sticker history
+                recipientRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User recipientUser = snapshot.getValue(User.class);
+                        recipientUser.receivedHistory.add(new Sticker(currentUsername, recipient, newSticker));
+                        recipientRef.setValue(recipientUser);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+
+                // update sender's metadata
+                currentUserRecord.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User currentUser = snapshot.getValue(User.class);
+                        currentUser.stickersSend += 1;
+                        currentUserRecord.setValue(currentUser);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+            }
+        }).start();
     }
 }
