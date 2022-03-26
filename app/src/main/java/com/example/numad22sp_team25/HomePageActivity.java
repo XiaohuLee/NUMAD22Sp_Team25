@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -119,6 +120,8 @@ public class HomePageActivity extends AppCompatActivity {
 
     public void sendSticker(View view) {
         Toast.makeText(HomePageActivity.this ,currentUsername + " send sticker", Toast.LENGTH_SHORT).show();
+        DialogFragment window = new SendStickerWindow();
+        window.show(getSupportFragmentManager(), "send sticker");
     }
 
     public void showUserInfo(View view) {

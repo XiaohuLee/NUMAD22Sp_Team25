@@ -10,6 +10,9 @@
         <entry key="app/src/main/res/layout/activity_testdb.xml" value="0.17967987060546875" />
         <entry key="app/src/main/res/layout/actvity_sticker_records_holder.xml" value="0.16802536231884058" />
         <entry key="app/src/main/res/layout/acvitity_login.xml" value="0.17460495216259062" />
+        <entry key="app/src/main/res/layout/spinner_card.xml" value="0.1598731884057971" />
+        <entry key="app/src/main/res/layout/spinner_manager.xml" value="0.4655052074487659" />
+        <entry key="app/src/main/res/layout/sticker_window.xml" value="0.1598731884057971" />
       </map>
     </option>
   </component>

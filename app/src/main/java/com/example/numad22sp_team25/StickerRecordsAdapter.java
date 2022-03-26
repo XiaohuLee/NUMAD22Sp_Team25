@@ -19,7 +19,7 @@ public class StickerRecordsAdapter extends RecyclerView.Adapter<StickerRecordsHo
 
     @Override
     public StickerRecordsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_sticker_records_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sticker_records_card, parent, false);
         return new StickerRecordsHolder(view);
     }
 
