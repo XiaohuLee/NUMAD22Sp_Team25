@@ -16,6 +16,14 @@
         android:inputType="text"
         android:autofillHints="enter a valid username" />
 
+    <EditText
+        android:id="@+id/etText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="enter text"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
     <Spinner
         android:id="@+id/stickerSpinner"
         android:layout_width="300dp"

@@ -34,24 +34,13 @@
             android:id="@+id/send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send"
             android:onClick="sendSticker"
+            android:text="Send"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/userInfo"
             app:layout_constraintTop_toBottomOf="@+id/recycler_view" />
 
-        <Button
-            android:id="@+id/userInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="Show Status"
-            android:onClick="showUserInfo"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/send"
-            app:layout_constraintTop_toBottomOf="@+id/recycler_view" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

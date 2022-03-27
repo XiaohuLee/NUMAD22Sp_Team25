@@ -53,6 +53,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
     // current user-info
     private String currentUsername;
     private String currentToken;
+    //private String text;
     private int stickerSend;
     private ArrayList<Sticker> stickerRecords;
     private StickerRecordsAdapter stickerRecordsAdapter;
@@ -81,7 +82,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
         // cache components
         send = findViewById(R.id.send);
-        userInfo = findViewById(R.id.userInfo);
+        //userInfo = findViewById(R.id.userInfo);
 
         // current user and its token
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPreference", MODE_PRIVATE);
@@ -136,6 +137,21 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
     }
 
     public void showUserInfo(View view) {
+        currentUserRecord.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists() && currentUsername != null){
+                    User newUser = snapshot.getValue(User.class);
+                    stickerRecords = newUser.receivedHistory;
+                    createRecyclerView();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         Toast.makeText(HomePageActivity.this ,currentUsername + " has sent " + stickerSend + " stickers.", Toast.LENGTH_SHORT).show();
     }
 
@@ -256,7 +272,8 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                 String from = savedInstanceState.getString(i + " From");
                 String to = savedInstanceState.getString(i + " To");
                 int stickerId = savedInstanceState.getInt(i + " id");
-                stickerRecords.add(new Sticker(from, to, stickerId));
+                String text = savedInstanceState.getString(i + "text");
+                stickerRecords.add(new Sticker(from, to, stickerId, text));
             }
         }
 
@@ -276,13 +293,14 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
     @Override
     public void windowClick(DialogFragment send) {
         String recipient = ((EditText) send.getDialog().findViewById(R.id.spinnerUsername)).getText().toString();
+        String text = ((EditText) send.getDialog().findViewById(R.id.etText)).getText().toString();
         newStickerId = emojiIcon[((Spinner) send.getDialog().findViewById(R.id.stickerSpinner)).getSelectedItemPosition()];
 
         if (validRecipient(recipient)) {
             // Close the dialog window
             send.dismiss();
-            sendStickerToUser(recipient, newStickerId);
-            sendStickerToDB(recipient, newStickerId);
+            sendStickerToUser(recipient, newStickerId);//!!!!
+            sendStickerToDB(recipient, newStickerId, text);//!!!!
             Toast.makeText(HomePageActivity.this ,"Successfully send sticker to " + recipient, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(HomePageActivity.this , "Username:" + recipient + " not present, please choose another user", Toast.LENGTH_SHORT).show();
@@ -340,7 +358,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         }).start();
     }
 
-    private void sendStickerToDB(String recipient, Integer newSticker) {
+    private void sendStickerToDB(String recipient, Integer newSticker, String text) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -353,7 +371,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         User recipientUser = snapshot.getValue(User.class);
                         if (recipientUser != null && doOnce) {
-                            recipientUser.addSticker(new Sticker(currentUsername, recipient, newSticker));
+                            recipientUser.addSticker(new Sticker(currentUsername, recipient, newSticker, text));
                             recipientRef.setValue(recipientUser);
                         }
                         doOnce = false;
@@ -364,6 +382,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                     }
                 });
 
+
                 // update sender's metadata
                 currentUserRecord.addValueEventListener(new ValueEventListener() {
                     boolean doOnce = true;
@@ -373,6 +392,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                         User currentUser = snapshot.getValue(User.class);
                         if (doOnce) {
                             currentUser.stickersSend += 1;
+                            currentUser.receivedHistory.add(new Sticker(currentUsername, recipient, newSticker, text));
                             currentUserRecord.setValue(currentUser);
                         }
                         doOnce = false;
@@ -384,5 +404,58 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                 });
             }
         }).start();
+    }
+
+    @Override
+    protected void onStart() {
+
+        super.onStart();
+
+        currentUserRecord.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && currentUsername != null) {
+                    User newUser = snapshot.getValue(User.class);
+                    stickerRecords = newUser.receivedHistory;
+                    createRecyclerView();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        currentUserRecord.child("Users").child(currentUsername).child("receivedHistory").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if (snapshot.exists() && currentUsername != null) {
+                    User newUser = snapshot.getValue(User.class);
+                    stickerRecords = newUser.receivedHistory;
+                    createRecyclerView();
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }
