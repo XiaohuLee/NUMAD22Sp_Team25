@@ -405,4 +405,57 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
             }
         }).start();
     }
+
+    @Override
+    protected void onStart() {
+
+        super.onStart();
+
+        currentUserRecord.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && currentUsername != null) {
+                    User newUser = snapshot.getValue(User.class);
+                    stickerRecords = newUser.receivedHistory;
+                    createRecyclerView();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        currentUserRecord.child("Users").child(currentUsername).child("receivedHistory").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if (snapshot.exists() && currentUsername != null) {
+                    User newUser = snapshot.getValue(User.class);
+                    stickerRecords = newUser.receivedHistory;
+                    createRecyclerView();
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 }
