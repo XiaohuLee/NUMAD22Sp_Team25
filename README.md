@@ -2,4 +2,6 @@
 
 Team 25 Group Projects repo
 
-A7 is in the master branch.
+Team members: Xiaohu Li, Jiawei Zhang, Zhongshi Luo and Fengqi Qiao.
+
+
