@@ -109,9 +109,6 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         // create notification
         createNotificationChannel();
 
-        // current user subscribe to their own topic to get notifications
-        subscribe();
-
         setContentView(R.layout.activity_homepage);
 
         // initialize recyclerView
@@ -134,7 +131,6 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
     }
 
     public void sendSticker(View view) {
-        Toast.makeText(HomePageActivity.this ,currentUsername + " send sticker", Toast.LENGTH_SHORT).show();
         DialogFragment window = new SendStickerWindow();
         window.show(getSupportFragmentManager(), "send sticker");
     }
@@ -231,17 +227,19 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
             notificationChannel.setDescription("A7 Channel for user sticker messaging, current user is: " + currentUsername);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(notificationChannel);
+            subscribe();
         }
     }
 
     private void subscribe() {
-        FirebaseMessaging.getInstance().subscribeToTopic(currentUsername).addOnCompleteListener(new OnCompleteListener<Void>() {
+        FirebaseMessaging.getInstance().subscribeToTopic(currentUsername)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                String msg = currentUsername + " subscribed to own topic" ;
-                if (!task.isSuccessful()) {
-                    Toast.makeText(HomePageActivity.this ,currentUsername + " failed to subscribe", Toast.LENGTH_SHORT).show();
+                if (task.isSuccessful()) {
+                    Toast.makeText(HomePageActivity.this ,currentUsername + " subscribed to own topic", Toast.LENGTH_SHORT).show();
                 } else {
+                    Toast.makeText(HomePageActivity.this ,currentUsername + " failed to subscribe", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -281,9 +279,10 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         newStickerId = emojiIcon[((Spinner) send.getDialog().findViewById(R.id.stickerSpinner)).getSelectedItemPosition()];
 
         if (validRecipient(recipient)) {
+            // Close the dialog window
             send.dismiss();
             sendStickerToUser(recipient, newStickerId);
-            postSendUpdate(recipient, newStickerId);
+            sendStickerToDB(recipient, newStickerId);
             Toast.makeText(HomePageActivity.this ,"Successfully send sticker to " + recipient, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(HomePageActivity.this , "Username:" + recipient + " not present, please choose another user", Toast.LENGTH_SHORT).show();
@@ -310,7 +309,9 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         return allUsersHashmap.containsKey(recipient);
     }
 
-    private void sendStickerToUser(String recipient, Integer newSticker) {
+    private void sendStickerToUser(String recipient, int newSticker) {
+
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -325,7 +326,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                     jNotification.put("badge", "1");
 
                     // construct payload
-                    jPayload.put("to", "/topics/" + recipient);
+                    jPayload.put("to", "/Users/" + recipient);
                     jPayload.put("priority", "high");
                     jPayload.put("notification", jNotification);
                 } catch (JSONException e) {
@@ -339,7 +340,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         }).start();
     }
 
-    private void postSendUpdate(String recipient, Integer newSticker) {
+    private void sendStickerToDB(String recipient, Integer newSticker) {
         new Thread(new Runnable() {
             @Override
             public void run() {
