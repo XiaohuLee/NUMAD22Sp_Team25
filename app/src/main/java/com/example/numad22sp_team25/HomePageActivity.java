@@ -27,7 +27,6 @@ import com.example.numad22sp_team25.fcm.Utils;
 import com.example.numad22sp_team25.model.Sticker;
 import com.example.numad22sp_team25.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -62,7 +61,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
     private HashMap<String, Boolean> allUsersHashmap;
 
     // send metadata
-    private Integer newSticker;
+    private Integer newStickerId;
 
     // infrastructure resources
     private FirebaseDatabase db;
@@ -73,6 +72,8 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
     // event listeners to above DatabaseReference
     ChildEventListener currentUserHistoryListener;
     ChildEventListener allUsersListener;
+
+    private static final String TAG = HomePageActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,11 +106,11 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         allUsersListener();
         stickerSendListener();
 
-//        // create notification
-//        createNotificationChannel();
+        // create notification
+        createNotificationChannel();
 
-//        // current user subscribe to their own topic to get notifications
-//        subscribe();
+        // current user subscribe to their own topic to get notifications
+        subscribe();
 
         setContentView(R.layout.activity_homepage);
 
@@ -142,6 +143,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         Toast.makeText(HomePageActivity.this ,currentUsername + " has sent " + stickerSend + " stickers.", Toast.LENGTH_SHORT).show();
     }
 
+    // TODO: cleanup this function
     private void restartLoginActivity() {
         Intent intent = new Intent(HomePageActivity.this, LoginActivity.class);
         startActivity(intent);
@@ -276,11 +278,12 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
     @Override
     public void windowClick(DialogFragment send) {
         String recipient = ((EditText) send.getDialog().findViewById(R.id.spinnerUsername)).getText().toString();
-        newSticker = emojiIcon[((Spinner) send.getDialog().findViewById(R.id.stickerSpinner)).getSelectedItemPosition()];
+        newStickerId = emojiIcon[((Spinner) send.getDialog().findViewById(R.id.stickerSpinner)).getSelectedItemPosition()];
 
         if (validRecipient(recipient)) {
             send.dismiss();
-            sendStickerToUser(recipient, newSticker);
+            sendStickerToUser(recipient, newStickerId);
+            postSendUpdate(recipient, newStickerId);
             Toast.makeText(HomePageActivity.this ,"Successfully send sticker to " + recipient, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(HomePageActivity.this , "Username:" + recipient + " not present, please choose another user", Toast.LENGTH_SHORT).show();
@@ -288,7 +291,23 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
     }
 
     private boolean validRecipient(String recipient) {
-        return false;
+        if (allUsersHashmap.containsKey(recipient)) return true;
+
+        DatabaseReference recipientRef = db.getReference("Users/" + recipient);
+        recipientRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    allUsersHashmap.put(recipient, true);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
+        return allUsersHashmap.containsKey(recipient);
     }
 
     private void sendStickerToUser(String recipient, Integer newSticker) {
@@ -315,9 +334,12 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
                 // send payload
                 String response = Utils.fcmHttpConnection(SERVER_KEY, jPayload);
+                Log.d(TAG, "Response for sending stickers: " + response);
             }
         }).start();
+    }
 
+    private void postSendUpdate(String recipient, Integer newSticker) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -325,11 +347,15 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
                 // update recipients sticker history
                 recipientRef.addValueEventListener(new ValueEventListener() {
+                    boolean doOnce = true;
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         User recipientUser = snapshot.getValue(User.class);
-                        recipientUser.receivedHistory.add(new Sticker(currentUsername, recipient, newSticker));
-                        recipientRef.setValue(recipientUser);
+                        if (recipientUser != null && doOnce) {
+                            recipientUser.addSticker(new Sticker(currentUsername, recipient, newSticker));
+                            recipientRef.setValue(recipientUser);
+                        }
+                        doOnce = false;
                     }
 
                     @Override
@@ -339,11 +365,16 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
                 // update sender's metadata
                 currentUserRecord.addValueEventListener(new ValueEventListener() {
+                    boolean doOnce = true;
+
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         User currentUser = snapshot.getValue(User.class);
-                        currentUser.stickersSend += 1;
-                        currentUserRecord.setValue(currentUser);
+                        if (doOnce) {
+                            currentUser.stickersSend += 1;
+                            currentUserRecord.setValue(currentUser);
+                        }
+                        doOnce = false;
                     }
 
                     @Override
