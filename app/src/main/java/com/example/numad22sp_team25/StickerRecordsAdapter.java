@@ -26,6 +26,7 @@ public class StickerRecordsAdapter extends RecyclerView.Adapter<StickerRecordsHo
     @Override
     public void onBindViewHolder(StickerRecordsHolder holder, int position) {
         Sticker currentItem = stickerRecords.get(position);
+        holder.text.setText("Text: " + currentItem.text);
         holder.currentUserName.setText("From: " + currentItem.from);
         holder.senderName.setText("To: " + currentItem.to);
         holder.stickerIcon.setImageResource(currentItem.stickerId);

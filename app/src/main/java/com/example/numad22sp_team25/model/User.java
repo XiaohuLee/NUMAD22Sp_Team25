@@ -18,7 +18,7 @@ public class User {
         this.token = token;
         this.receivedHistory = new ArrayList<Sticker>();
         // Need to put a dummy, otherwise, firebase db will not record the key
-        this.receivedHistory.add(new Sticker("dummyFrom", "dummyTo", R.drawable.lol));
+        this.receivedHistory.add(new Sticker("dummyFrom", "dummyTo", R.drawable.lol, "null"));
         this.stickersSend = 0;
     }
 
