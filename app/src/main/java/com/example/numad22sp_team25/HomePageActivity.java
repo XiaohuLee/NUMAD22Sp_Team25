@@ -379,6 +379,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                     }
                 });
 
+
                 // update sender's metadata
                 currentUserRecord.addValueEventListener(new ValueEventListener() {
                     boolean doOnce = true;
@@ -388,6 +389,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                         User currentUser = snapshot.getValue(User.class);
                         if (doOnce) {
                             currentUser.stickersSend += 1;
+                            currentUser.receivedHistory.add(new Sticker(currentUsername, recipient, newSticker));
                             currentUserRecord.setValue(currentUser);
                         }
                         doOnce = false;
