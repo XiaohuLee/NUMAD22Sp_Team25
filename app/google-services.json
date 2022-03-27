@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "166245822173",
+    "project_id": "numad22sp-team25",
+    "storage_bucket": "numad22sp-team25.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166245822173:android:f05280035c54ce7f81b534",
+        "android_client_info": {
+          "package_name": "com.example.numad22sp_team25"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "166245822173-3l68d4c32dbdtrrnfhpfbe8vl8qkdl2t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP1RzlK81EVXe8fJgni0q9ekIpyPaDLSo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "166245822173-3l68d4c32dbdtrrnfhpfbe8vl8qkdl2t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

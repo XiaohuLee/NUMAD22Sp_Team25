@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/emojiIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:contentDescription="Emoji Icon"
+            android:paddingBottom="20dp"/>
+
+        <TextView
+            android:id="@+id/emojiTitle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="Emoji Title"
+            android:gravity="center"
+            android:paddingStart="10dp" />
+
+    </TableRow>
+</TableLayout>
