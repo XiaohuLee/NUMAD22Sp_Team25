@@ -136,6 +136,21 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
     }
 
     public void showUserInfo(View view) {
+        currentUserRecord.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists() && currentUsername != null){
+                    User newUser = snapshot.getValue(User.class);
+                    stickerRecords = newUser.receivedHistory;
+                    createRecyclerView();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         Toast.makeText(HomePageActivity.this ,currentUsername + " has sent " + stickerSend + " stickers.", Toast.LENGTH_SHORT).show();
     }
 
