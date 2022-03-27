@@ -82,7 +82,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
         // cache components
         send = findViewById(R.id.send);
-        userInfo = findViewById(R.id.userInfo);
+        //userInfo = findViewById(R.id.userInfo);
 
         // current user and its token
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPreference", MODE_PRIVATE);
