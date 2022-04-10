@@ -38,18 +38,6 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/sendUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/currentUsername"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="7dp"
-            android:text="sendername"
-            android:textSize="15sp"
-            android:textStyle="bold"/>
-
-        <TextView
             android:id="@+id/tvText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,7 +53,7 @@
             android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/sendUsername"
+            android:layout_below="@+id/currentUsername"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="10dp"
             android:layout_marginTop="7dp"

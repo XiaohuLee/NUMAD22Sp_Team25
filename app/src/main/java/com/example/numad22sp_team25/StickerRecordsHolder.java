@@ -17,7 +17,7 @@ public class StickerRecordsHolder extends RecyclerView.ViewHolder {
         super(view);
         currentUserName = view.findViewById(R.id.currentUsername);
         text = view.findViewById(R.id.tvText);
-        senderName = view.findViewById(R.id.sendUsername);
+//        senderName = view.findViewById(R.id.sendUsername);
         stickerIcon = view.findViewById(R.id.stickerIcon);
         timestamp = view.findViewById(R.id.timestamp);
     }

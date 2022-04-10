@@ -32,7 +32,7 @@ public class StickerRecordsAdapter extends RecyclerView.Adapter<StickerRecordsHo
         Sticker currentItem = stickerRecords.get(position);
         holder.text.setText("Text: " + currentItem.text);
         holder.currentUserName.setText("From: " + currentItem.from);
-        holder.senderName.setText("To: " + currentItem.to);
+//        holder.senderName.setText("To: " + currentItem.to);
         holder.timestamp.setText("Time: " + convertTimestamp(currentItem.timestamp));
         holder.stickerIcon.setImageResource(currentItem.stickerId);
     }

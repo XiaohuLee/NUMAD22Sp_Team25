@@ -354,7 +354,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
                 try {
                     // update notification
-                    jNotification.put("title", "Sticker from " + currentUsername + " to " + recipient);
+                    jNotification.put("title", "New sticker from " + currentUsername);
                     jNotification.put("body", newSticker);
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
