@@ -1,10 +1,13 @@
 package com.example.numad22sp_team25.fcm;
 
+import static com.example.numad22sp_team25.Resource.emojiIcon;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.Log;
 
@@ -15,6 +18,9 @@ import com.example.numad22sp_team25.HomePageActivity;
 import com.example.numad22sp_team25.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.net.CacheRequest;
+import java.util.Objects;
 
 public class FCMServer extends FirebaseMessagingService {
     private static final String TAG = FCMServer.class.getSimpleName();
@@ -80,9 +86,11 @@ public class FCMServer extends FirebaseMessagingService {
         }
 
         notification = builder.setContentTitle(remoteMessage.getTitle())
-                .setContentText("New Sticker")
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentText("Alert: You received a new sticker!!!")
+                .setSmallIcon(emojiIcon[Integer.parseInt(Objects.requireNonNull(remoteMessage.getBody()))])
                 .setAutoCancel(true)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                        emojiIcon[Integer.parseInt(Objects.requireNonNull(remoteMessage.getBody()))]))
                 .setContentIntent(pendingIntent)
                 .build();
 

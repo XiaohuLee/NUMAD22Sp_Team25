@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class StickerRecordsHolder extends RecyclerView.ViewHolder {
     public TextView currentUserName;
-    public TextView senderName;
+//    public TextView senderName;
     public TextView text;
     public TextView timestamp;
     public ImageView stickerIcon;

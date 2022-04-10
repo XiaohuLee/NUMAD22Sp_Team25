@@ -18,7 +18,6 @@ public class Resource {
             R.drawable.sad,
             R.drawable.sleeping,
             R.drawable.smile,
-            R.drawable.smile,
             R.drawable.think
     };
 }
