@@ -317,7 +317,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         if (validRecipient(recipient)) {
             // Close the dialog window
             send.dismiss();
-            sendStickerToUserTopic(recipient, newStickerId);
+            sendStickerToUserTopic(recipient, ((Spinner) send.getDialog().findViewById(R.id.stickerSpinner)).getSelectedItemPosition());
             sendStickerToDB(recipient, newStickerId, text);
             Toast.makeText(HomePageActivity.this ,"Successfully send sticker to " + recipient, Toast.LENGTH_SHORT).show();
         } else {
@@ -354,7 +354,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
                 try {
                     // update notification
-                    jNotification.put("title", "New sticker from " + currentUsername);
+                    jNotification.put("title", "New sticker from your friend: " + currentUsername);
                     jNotification.put("body", newSticker);
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
