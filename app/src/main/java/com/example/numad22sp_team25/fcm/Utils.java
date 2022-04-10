@@ -35,7 +35,7 @@ public class Utils {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authrization", serverToken);
+            conn.setRequestProperty("Authorization", serverToken);
             conn.setDoOutput(true);
 
             OutputStream outputStream = conn.getOutputStream();

@@ -14,10 +14,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -49,6 +51,8 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
     private StickerRecordsAdapter rViewAdapter;
     private Button send;
     private Button userInfo;
+    private TextView usernameTV;
+    private TextView stickerSendTV;
 
     // current user-info
     private String currentUsername;
@@ -76,6 +80,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
     private static final String TAG = HomePageActivity.class.getSimpleName();
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +117,11 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
         setContentView(R.layout.activity_homepage);
 
+        usernameTV = findViewById(R.id.textview_username);
+        stickerSendTV = findViewById(R.id.textview_stickersend);
+        // init username
+        usernameTV.setText("username: " + currentUsername);
+
         // initialize recyclerView
         initializeRecyclerview(savedInstanceState);
     }
@@ -138,6 +148,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
     public void showUserInfo(View view) {
         currentUserRecord.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists() && currentUsername != null){
@@ -155,7 +166,6 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         Toast.makeText(HomePageActivity.this ,currentUsername + " has sent " + stickerSend + " stickers.", Toast.LENGTH_SHORT).show();
     }
 
-    // TODO: cleanup this function
     private void restartLoginActivity() {
         Intent intent = new Intent(HomePageActivity.this, LoginActivity.class);
         startActivity(intent);
@@ -227,6 +237,9 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                     User newUser = snapshot.getValue(User.class);
                     if (newUser != null) {
                         stickerSend = newUser.stickersSend;
+
+                        // set textView
+                        stickerSendTV.setText("number of stickers send: " + stickerSend);
                     }
                 }
             }
@@ -252,15 +265,16 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Toast.makeText(HomePageActivity.this ,currentUsername + " subscribed to own topic", Toast.LENGTH_SHORT).show();
-                } else {
+                if (!task.isSuccessful()) {
                     Toast.makeText(HomePageActivity.this ,currentUsername + " failed to subscribe", Toast.LENGTH_SHORT).show();
+                } else {
+//                    Toast.makeText(HomePageActivity.this ,currentUsername + " subscribed to own topic", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void initializeRecyclerview(Bundle savedInstanceState) {
         // Restore recyclerView on orientation change
         if (savedInstanceState != null && savedInstanceState.containsKey("StickerSize")) {
@@ -281,10 +295,14 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         createRecyclerView();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void createRecyclerView() {
         rLayoutManager = new LinearLayoutManager(this);
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
+        // filter dummy record
+        stickerRecords.removeIf(record -> record.from.equals("dummyFrom"));
+        stickerRecords.removeIf(record -> !record.to.equals(currentUsername));
         rViewAdapter = new StickerRecordsAdapter(stickerRecords);
         recyclerView.setAdapter(rViewAdapter);
         recyclerView.setLayoutManager(rLayoutManager);
@@ -299,8 +317,8 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         if (validRecipient(recipient)) {
             // Close the dialog window
             send.dismiss();
-            sendStickerToUser(recipient, newStickerId);//!!!!
-            sendStickerToDB(recipient, newStickerId, text);//!!!!
+            sendStickerToUserTopic(recipient, newStickerId);
+            sendStickerToDB(recipient, newStickerId, text);
             Toast.makeText(HomePageActivity.this ,"Successfully send sticker to " + recipient, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(HomePageActivity.this , "Username:" + recipient + " not present, please choose another user", Toast.LENGTH_SHORT).show();
@@ -327,9 +345,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         return allUsersHashmap.containsKey(recipient);
     }
 
-    private void sendStickerToUser(String recipient, int newSticker) {
-
-
+    private void sendStickerToUserTopic(String recipient, int newSticker) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -338,13 +354,13 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
                 try {
                     // update notification
-                    jNotification.put("title", "Sticker from " + currentUsername + " to " + recipient);
+                    jNotification.put("title", "New sticker from " + currentUsername);
                     jNotification.put("body", newSticker);
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
 
                     // construct payload
-                    jPayload.put("to", "/Users/" + recipient);
+                    jPayload.put("to", "/topics/" + recipient);
                     jPayload.put("priority", "high");
                     jPayload.put("notification", jNotification);
                 } catch (JSONException e) {
@@ -358,11 +374,11 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         }).start();
     }
 
-    private void sendStickerToDB(String recipient, Integer newSticker, String text) {
+    private void sendStickerToDB(String rcp, Integer newSticker, String text) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                DatabaseReference recipientRef = db.getReference("Users/" + recipient);
+                DatabaseReference recipientRef = db.getReference("Users/" + rcp);
 
                 // update recipients sticker history
                 recipientRef.addValueEventListener(new ValueEventListener() {
@@ -371,7 +387,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         User recipientUser = snapshot.getValue(User.class);
                         if (recipientUser != null && doOnce) {
-                            recipientUser.addSticker(new Sticker(currentUsername, recipient, newSticker, text));
+                            recipientUser.addSticker(new Sticker(currentUsername, rcp, newSticker, text));
                             recipientRef.setValue(recipientUser);
                         }
                         doOnce = false;
@@ -382,7 +398,6 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                     }
                 });
 
-
                 // update sender's metadata
                 currentUserRecord.addValueEventListener(new ValueEventListener() {
                     boolean doOnce = true;
@@ -392,7 +407,6 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                         User currentUser = snapshot.getValue(User.class);
                         if (doOnce) {
                             currentUser.stickersSend += 1;
-                            currentUser.receivedHistory.add(new Sticker(currentUsername, recipient, newSticker, text));
                             currentUserRecord.setValue(currentUser);
                         }
                         doOnce = false;
@@ -412,6 +426,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         super.onStart();
 
         currentUserRecord.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists() && currentUsername != null) {
@@ -428,6 +443,7 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         });
 
         currentUserRecord.child("Users").child(currentUsername).child("receivedHistory").addChildEventListener(new ChildEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists() && currentUsername != null) {

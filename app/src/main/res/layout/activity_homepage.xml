@@ -7,22 +7,81 @@
     android:layout_height="match_parent"
     tools:context=".HomePageActivity">
 
+    <TextView
+        android:id="@+id/textview_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:text="username: "
+        android:textStyle="bold|italic"
+        android:textColor="#000000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textview_stickersend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textStyle="bold|italic"
+        android:textColor="#000000"
+        android:text="number of stickers send: "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toEndOf="@+id/textview_username"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/separate_line_top"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_username" />
+
+    <TextView
+        android:id="@+id/textview_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="35dp"
+        android:textColor="#30a000"
+        android:text="Below are the received stickers history:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent=".875"
+        android:layout_marginTop="56dp"
         android:background="@android:color/white"
         android:padding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".775"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
+
+    <View
+        android:id="@+id/separate_line_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recycler_view" />
 
     <LinearLayout
         android:id="@+id/button_container"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent=".125"
+        app:layout_constraintHeight_percent=".10"
         android:gravity="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,12 +94,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="sendSticker"
-            android:text="Send"
+            android:text="Click to send your friend a sticker"
+            android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/recycler_view" />
-
-
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
