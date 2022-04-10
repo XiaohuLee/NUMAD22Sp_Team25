@@ -14,10 +14,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -49,6 +51,8 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
     private StickerRecordsAdapter rViewAdapter;
     private Button send;
     private Button userInfo;
+    private TextView usernameTV;
+    private TextView stickerSendTV;
 
     // current user-info
     private String currentUsername;
@@ -112,6 +116,11 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
 
         setContentView(R.layout.activity_homepage);
 
+        usernameTV = findViewById(R.id.textview_username);
+        stickerSendTV = findViewById(R.id.textview_stickersend);
+        // init username
+        usernameTV.setText("username: " + currentUsername);
+
         // initialize recyclerView
         initializeRecyclerview(savedInstanceState);
     }
@@ -155,7 +164,6 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         Toast.makeText(HomePageActivity.this ,currentUsername + " has sent " + stickerSend + " stickers.", Toast.LENGTH_SHORT).show();
     }
 
-    // TODO: cleanup this function
     private void restartLoginActivity() {
         Intent intent = new Intent(HomePageActivity.this, LoginActivity.class);
         startActivity(intent);
@@ -227,6 +235,9 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
                     User newUser = snapshot.getValue(User.class);
                     if (newUser != null) {
                         stickerSend = newUser.stickersSend;
+
+                        // set textView
+                        stickerSendTV.setText("number of stickers send: " + stickerSend);
                     }
                 }
             }
@@ -281,10 +292,13 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         createRecyclerView();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void createRecyclerView() {
         rLayoutManager = new LinearLayoutManager(this);
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
+        // filter dummy record
+        stickerRecords.removeIf(record -> record.from.equals("dummyFrom"));
         rViewAdapter = new StickerRecordsAdapter(stickerRecords);
         recyclerView.setAdapter(rViewAdapter);
         recyclerView.setLayoutManager(rLayoutManager);

@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (CLIENT_REGISTRATION_TOKEN == null) {
                         CLIENT_REGISTRATION_TOKEN = task.getResult();
                     }
-                    Toast.makeText(LoginActivity.this, CLIENT_REGISTRATION_TOKEN, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(LoginActivity.this, CLIENT_REGISTRATION_TOKEN, Toast.LENGTH_SHORT).show();
                 }
             }
         });
