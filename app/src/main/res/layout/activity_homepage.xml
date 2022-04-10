@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:background="@android:color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_username" />
@@ -49,7 +49,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="35dp"
         android:textColor="#30a000"
-        android:text="Below are the received stickers history:"
+        android:text="Below are your received stickers history:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -61,27 +61,17 @@
         android:background="@android:color/white"
         android:padding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent=".775"
+        app:layout_constraintHeight_percent=".7"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
-    <View
-        android:id="@+id/separate_line_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recycler_view" />
-
     <LinearLayout
         android:id="@+id/button_container"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent=".10"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:gravity="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
