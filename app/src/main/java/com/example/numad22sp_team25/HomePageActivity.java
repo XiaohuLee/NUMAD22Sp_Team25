@@ -317,9 +317,15 @@ public class HomePageActivity extends AppCompatActivity implements SendStickerWi
         if (validRecipient(recipient)) {
             // Close the dialog window
             send.dismiss();
-            sendStickerToUserTopic(recipient, ((Spinner) send.getDialog().findViewById(R.id.stickerSpinner)).getSelectedItemPosition());
-            sendStickerToDB(recipient, newStickerId, text);
-            Toast.makeText(HomePageActivity.this ,"Successfully send sticker to " + recipient, Toast.LENGTH_SHORT).show();
+
+            // cannot send sticker to itself
+            if (recipient.equals(currentUsername)) {
+                Toast.makeText(HomePageActivity.this , "Failed. Please choose a user other than yourself", Toast.LENGTH_SHORT).show();
+            } else {
+                sendStickerToUserTopic(recipient, ((Spinner) send.getDialog().findViewById(R.id.stickerSpinner)).getSelectedItemPosition());
+                sendStickerToDB(recipient, newStickerId, text);
+                Toast.makeText(HomePageActivity.this, "Successfully send sticker to " + recipient, Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(HomePageActivity.this , "Username:" + recipient + " not present, please choose another user", Toast.LENGTH_SHORT).show();
         }
